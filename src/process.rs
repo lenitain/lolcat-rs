@@ -1,5 +1,5 @@
-use std::io::{BufRead, BufWriter, Write};
 use crate::color::ColorGenerator;
+use std::io::{BufRead, BufWriter, Write};
 
 pub fn process_input<R: BufRead, W: Write>(
     mut reader: R,
@@ -31,7 +31,7 @@ pub fn process_input<R: BufRead, W: Write>(
                 write!(writer, "{}", c)?;
             }
         }
-        write!(writer, "\x1b[0m\n")?; // Reset color at end of line
+        writeln!(writer, "\x1b[0m")?; // Reset color at end of line
     }
     writer.flush()
 }

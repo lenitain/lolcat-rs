@@ -14,6 +14,7 @@
 - **💎 Exact Parity**: Mathematical replication of the original sine-wave rainbow algorithm.
 - **📄 Binary Safe**: Handles binary files and invalid UTF-8 gracefully (like `cat`).
 - **💡 Saturation Boost**: Tuned for slightly more vibrant, brighter colors than the original.
+- **🌈 Custom Gradients**: Define your own color stops with `-g` parameter (Photoshop-style).
 
 ## 📦 Installation
 
@@ -49,6 +50,9 @@ lolcat-rs README.md
 |------|-------------|---------|
 | `-f, --freq <float>` | Rainbow frequency (rainbow tightness) | `0.1` |
 | `-s, --spread <float>` | Rainbow spread (gradient speed) | `2.6` |
+| `-g, --gradient <string>` | Custom gradient color stops | `rainbow` |
+| `-m, --smoothness <float>` | Transition smoothness (0-100) | `100` |
+| `-i, --interpolate <mode>` | Interpolation: `linear`, `oklch`, `cubic` | `oklch` |
 | `-h, --help` | Show help message | |
 
 ## 🔧 Comparison
