@@ -12,6 +12,7 @@ struct Args {
     gradient: Option<String>,
     smoothness: f64,
     interpolate: color::InterpolationMode,
+    wave: color::WaveMode,
 }
 
 fn parse_args() -> Result<Args, lexopt::Error> {
@@ -21,6 +22,7 @@ fn parse_args() -> Result<Args, lexopt::Error> {
     let mut gradient = None;
     let mut smoothness = 100.0;
     let mut interpolate = color::InterpolationMode::Oklch;
+    let mut wave = color::WaveMode::Sine;
     let mut parser = lexopt::Parser::from_env();
 
     while let Some(arg) = parser.next()? {
@@ -51,6 +53,16 @@ fn parse_args() -> Result<Args, lexopt::Error> {
                     }
                 };
             }
+            Short('w') | Long("wave") => {
+                let val = parser.value()?.into_string()?;
+                wave = match val.as_str() {
+                    "sine" => color::WaveMode::Sine,
+                    "linear" => color::WaveMode::Linear,
+                    _ => {
+                        return Err(lexopt::Error::from(format!("Unknown wave mode: {}", val)));
+                    }
+                };
+            }
             Short('h') | Long("help") => {
                 println!("lolcat-rs - A high-performance, vibrant rainbow coloring tool");
                 println!("\nUsage: lolcat-rs [OPTIONS] [FILES]...");
@@ -66,6 +78,7 @@ fn parse_args() -> Result<Args, lexopt::Error> {
                 println!(
                     "  -i, --interpolate <MODE>  Interpolation: linear, oklch, cubic [default: oklch]"
                 );
+                println!("  -w, --wave <MODE>         Wave mode: sine, linear [default: sine]");
                 println!("  -h, --help                Print help");
                 std::process::exit(0);
             }
@@ -87,6 +100,7 @@ fn parse_args() -> Result<Args, lexopt::Error> {
         gradient,
         smoothness,
         interpolate,
+        wave,
     })
 }
 
@@ -121,6 +135,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
         smoothness: args.smoothness / 100.0,
         interpolate: args.interpolate,
         custom_gradient,
+        wave: args.wave,
     };
 
     for path in args.files {

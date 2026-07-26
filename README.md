@@ -53,6 +53,7 @@ lolcat-rs README.md
 | `-g, --gradient <string>` | Custom gradient color stops | `rainbow` |
 | `-m, --smoothness <float>` | Transition smoothness (0-100) | `100` |
 | `-i, --interpolate <mode>` | Interpolation: `linear`, `oklch`, `cubic` | `oklch` |
+| `-w, --wave <mode>` | Wave mode: `sine`, `linear` | `sine` |
 | `-h, --help` | Show help message | |
 
 ## 🔧 Comparison

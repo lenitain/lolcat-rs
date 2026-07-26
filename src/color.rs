@@ -6,6 +6,12 @@ pub enum InterpolationMode {
 }
 
 #[derive(Clone, Copy)]
+pub enum WaveMode {
+    Sine,
+    Linear,
+}
+
+#[derive(Clone, Copy)]
 pub struct ColorStop {
     pub position: f64,
     pub color: (u8, u8, u8),
@@ -20,6 +26,7 @@ pub struct ColorGenerator {
     pub smoothness: f64,
     pub interpolate: InterpolationMode,
     pub custom_gradient: bool,
+    pub wave: WaveMode,
 }
 
 impl ColorGenerator {
@@ -30,8 +37,8 @@ impl ColorGenerator {
     pub fn get_rgb(&self, char_idx: usize) -> (u8, u8, u8) {
         let i = self.seed + self.line_idx as f64 + char_idx as f64 / self.spread;
 
-        // Use original sine wave algorithm for default rainbow
-        if !self.custom_gradient {
+        // Use original sine wave algorithm for default rainbow with sine mode
+        if !self.custom_gradient && matches!(self.wave, WaveMode::Sine) {
             let r = ((self.freq * i).sin() * 150.0 + 128.0).clamp(0.0, 255.0) as u8;
             let g = ((self.freq * i + 2.0 * std::f64::consts::PI / 3.0).sin() * 150.0 + 128.0)
                 .clamp(0.0, 255.0) as u8;
@@ -40,7 +47,10 @@ impl ColorGenerator {
             return (r, g, b);
         }
 
-        let position = (self.freq * i).sin() * 0.5 + 0.5;
+        let position = match self.wave {
+            WaveMode::Sine => (self.freq * i).sin() * 0.5 + 0.5,
+            WaveMode::Linear => (self.freq * i).rem_euclid(1.0),
+        };
         let position = position.rem_euclid(1.0);
 
         self.interpolate_gradient(position)
@@ -285,9 +295,34 @@ pub fn parse_color(s: &str) -> Result<(u8, u8, u8), String> {
 }
 
 pub fn default_rainbow() -> Vec<ColorStop> {
-    // Placeholder - actual colors computed by sine wave in get_rgb()
-    vec![ColorStop {
-        position: 0.0,
-        color: (0, 0, 0),
-    }]
+    vec![
+        ColorStop {
+            position: 0.0,
+            color: (255, 0, 0),
+        }, // Red
+        ColorStop {
+            position: 0.17,
+            color: (255, 127, 0),
+        }, // Orange
+        ColorStop {
+            position: 0.33,
+            color: (255, 255, 0),
+        }, // Yellow
+        ColorStop {
+            position: 0.5,
+            color: (0, 255, 0),
+        }, // Green
+        ColorStop {
+            position: 0.67,
+            color: (0, 255, 255),
+        }, // Cyan
+        ColorStop {
+            position: 0.83,
+            color: (0, 0, 255),
+        }, // Blue
+        ColorStop {
+            position: 1.0,
+            color: (255, 0, 255),
+        }, // Magenta
+    ]
 }
